@@ -21,6 +21,11 @@ export function AppSidebar() {
       url: "/tasks",
       icon: ListTodo,
     },
+    {
+      title: "auth",
+      url: "/auth",
+      icon: ListTodo
+    }
   ]
 
   return (
