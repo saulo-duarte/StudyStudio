@@ -50,4 +50,13 @@ impl User {
         )?;
         Ok(())
     }
+
+    pub fn count_activite_users(conn: &Connection) -> Result<i64> {
+        let count: i64 = conn.query_row(
+            "SELECT COUNT(*) FROM users WHERE status = 'active'", 
+            [], 
+            |row| row.get(0)
+        )?;
+        Ok(count)
+    }
 }

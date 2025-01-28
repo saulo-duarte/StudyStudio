@@ -9,12 +9,9 @@ impl UserController {
         name: &str
     ) -> Result<User, Box<dyn std::error::Error>> {
         let user = User::new(name);
-        
         let db_conn = state.db_conn();
-        let conn = db_conn.lock().unwrap();
-
+        let conn = db_conn.lock().map_err(|_| "Failed to acquire database lock")?;
         user.save(&conn)?;
-
         Ok(user)
     }
 

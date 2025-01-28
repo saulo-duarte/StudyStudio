@@ -28,7 +28,7 @@ pub fn initialize_database(conn: &Connection) -> Result<()> {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
             tag_id INTEGER,
-            completed BOOLEAN
+            completed BOOLEAN,
             priority TEXT CHECK(priority IN ('low', 'medium', 'high')) NOT NULL,
             created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
             due_date TIMESTAMP,

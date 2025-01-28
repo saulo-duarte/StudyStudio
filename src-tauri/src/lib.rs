@@ -37,24 +37,29 @@ impl AppState {
 
 }
 
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-
   let mut db_path = dirs::config_dir().unwrap_or_else(|| PathBuf::from("."));
   db_path.push("study-studio");
   db_path.push("app.db");
 
+  let app_state = AppState::new(db_path.to_str().unwrap())
+      .expect("Failed to initialize the application state");
+
   tauri::Builder::default()
-    .setup(|app| {
-      if cfg!(debug_assertions) {
-        app.handle().plugin(
-          tauri_plugin_log::Builder::default()
-            .level(log::LevelFilter::Info)
-            .build(),
-        )?;
-      }
-      Ok(())
-    })
-    .run(tauri::generate_context!())
-    .expect("error while running tauri application");
+      .manage(app_state)
+      .invoke_handler(tauri::generate_handler![
+        commands::get_active_users_count
+      ])
+      .setup(|app| {
+          if cfg!(debug_assertions) {
+              app.handle().plugin(
+                  tauri_plugin_log::Builder::default()
+                      .level(log::LevelFilter::Info)
+                      .build(),
+              )?;
+          }
+          Ok(())
+      })
+      .run(tauri::generate_context!())
+      .expect("error while running tauri application");
 }
