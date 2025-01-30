@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+const { fontFamily } = require('tailwindcss/defaultTheme')
 
 export default {
     darkMode: ["class"],
@@ -65,7 +66,20 @@ export default {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+			fontFamily: {
+				sans: ['var(--font-lato)', ...fontFamily.sans],
+        anta: ['var(--font-anta)'],
+        lato: ['var(--font-lato)']
+      },
+			fontWeight: {
+        thin: '100',
+        light: '300',
+        normal: '400',
+        medium: '500',
+        bold: '700',
+        black: '900'
+      }
   	}
   },
   plugins: [require("tailwindcss-animate")],
