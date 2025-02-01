@@ -6,9 +6,9 @@ use std::path::PathBuf;
 
 pub mod database;
 pub mod models;
-pub mod controllers;
 pub mod views;
 pub mod commands;
+pub mod errors;
 
 pub struct AppState {
   pub db_conn: Arc<Mutex<Connection>>
@@ -48,7 +48,7 @@ pub fn run() {
   tauri::Builder::default()
       .manage(app_state)
       .invoke_handler(tauri::generate_handler![
-        commands::get_active_users_count
+        commands::create_user
       ])
       .setup(|app| {
           if cfg!(debug_assertions) {
