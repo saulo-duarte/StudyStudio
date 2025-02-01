@@ -1,21 +1,26 @@
-use crate::models::{User, Status};
-use serde_json::json;
+use chrono::NaiveDateTime;
+use serde::Serialize;
+use crate::models::user::User;
 
-pub struct UserView;
+#[derive(Debug, Serialize)]
+pub struct UserView {
+    pub id: Option<u32>,
+    pub name: String,
+    pub status: String,
+    pub created_at: String,
+}
 
-impl UserView {
-
-    pub fn render_user(user: &User) -> String {
-        json!({
-            "id": user.id,
-            "name": user.name,
-            "status": match user.status {
-                Status::Active => "active",
-                Status::Inactive => "inactive",
-            },
-            "created_at": user.created_at.to_rfc3339(),
-            "last_login": user.last_login.map(|d| d.to_rfc3339())
-        })
-        .to_string() 
+impl From<User> for UserView{
+    fn from(user: User) -> Self {
+        UserView {
+            id: user.id,
+            name: user.name,
+            status: user.status.as_str().to_string(),
+            created_at: format_datetime(user.created_at),        
+        }
     }
+}
+
+fn format_datetime(dt: NaiveDateTime) -> String {
+    dt.format("%Y-%m-%d %H:%M:%S").to_string()
 }
