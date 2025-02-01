@@ -34,6 +34,20 @@ pub fn create_user(name: String, state: State<AppState>) -> Result<UserView, Str
 }
 
 
+#[tauri::command]
+pub fn get_activities_users_count_command(state: State<AppState>) -> Result<bool, String> {
+    let db_conn = state.db_conn();
+
+    let conn = db_conn
+        .lock()
+        .map_err(|_| "Failed to acquire DB connection lock".to_string())?;
+
+    let count = User::get_activities_users_count(&conn)
+        .map_err(|e| e.to_string())?;
+
+    Ok(count > 0)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -4,6 +4,7 @@ use std::fmt;
 pub enum UserError {
     InvalidName(String),
     InvalidStatus(String),
+    DatabaseError(String),
 }
 
 impl std::error::Error for UserError {}
@@ -13,6 +14,7 @@ impl fmt::Display for UserError {
         match self {
             UserError::InvalidName(msg) => write!(f, "Invalid user name: {}", msg),
             UserError::InvalidStatus(status) => write!(f, "Invalid user status: {}", status),
+            UserError::DatabaseError(err) => write!(f, "Database error: {}", err),
         }
     }
 }

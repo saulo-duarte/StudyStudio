@@ -48,7 +48,8 @@ pub fn run() {
   tauri::Builder::default()
       .manage(app_state)
       .invoke_handler(tauri::generate_handler![
-        commands::create_user
+        commands::create_user,
+        commands::get_activities_users_count_command,
       ])
       .setup(|app| {
           if cfg!(debug_assertions) {

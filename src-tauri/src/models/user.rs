@@ -56,4 +56,16 @@ impl User {
             created_at: Utc::now().naive_utc(),
         })
     }
+
+    pub fn get_activities_users_count(db_conn: &rusqlite::Connection) -> Result<u32, UserError> {
+        let mut stmt = db_conn
+            .prepare("SELECT COUNT(*) FROM users WHERE status = 'active'")
+            .map_err(|e| UserError::DatabaseError(e.to_string()))?;
+        
+        let count: u32 = stmt
+            .query_row([], |row| row.get(0))
+            .map_err(|e| UserError::DatabaseError(e.to_string()))?;
+
+        Ok(count)
+    }
 }
