@@ -8,7 +8,6 @@ pub enum UserStatus {
     Inactive,
 }
 
-
 impl UserStatus {
     pub fn as_str(&self) -> &'static str {
         match self {
@@ -56,16 +55,30 @@ impl User {
             created_at: Utc::now().naive_utc(),
         })
     }
+}
 
-    pub fn get_activities_users_count(db_conn: &rusqlite::Connection) -> Result<u32, UserError> {
-        let mut stmt = db_conn
-            .prepare("SELECT COUNT(*) FROM users WHERE status = 'active'")
-            .map_err(|e| UserError::DatabaseError(e.to_string()))?;
-        
-        let count: u32 = stmt
-            .query_row([], |row| row.get(0))
-            .map_err(|e| UserError::DatabaseError(e.to_string()))?;
+#[cfg(test)]
+mod user_status_tests {
+    use super::*;
 
-        Ok(count)
+    #[test]
+    fn test_from_str_valid() {
+        assert_eq!(UserStatus::from_str("active").unwrap(), UserStatus::Active);
+        assert_eq!(UserStatus::from_str("ACTIVE").unwrap(), UserStatus::Active); // Case insensitivity
+        assert_eq!(UserStatus::from_str("inactive").unwrap(), UserStatus::Inactive);
+    }
+
+    #[test]
+    fn test_from_str_invalid() {
+        assert!(matches!(
+            UserStatus::from_str("pending"),
+            Err(UserError::InvalidStatus(_))
+        ));
+    }
+
+    #[test]
+    fn test_display() {
+        assert_eq!(format!("{}", UserStatus::Active), "active");
+        assert_eq!(format!("{}", UserStatus::Inactive), "inactive");
     }
 }
