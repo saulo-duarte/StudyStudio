@@ -19,6 +19,11 @@ impl fmt::Display for UserError {
     }
 }
 
+impl From<rusqlite::Error> for UserError {
+    fn from(e: rusqlite::Error) -> Self {
+        UserError::DatabaseError(e.to_string())
+    }
+}
 
 #[cfg(test)]
 mod tests {
