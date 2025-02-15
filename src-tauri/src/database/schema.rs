@@ -26,13 +26,13 @@ pub fn initialize_database(conn: &Connection) -> Result<()> {
         CREATE TABLE IF NOT EXISTS tasks (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
-            tag_id INTEGER,
-            completed BOOLEAN,
-            priority TEXT CHECK(priority IN ('low', 'medium', 'high')) NOT NULL,
-            created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-            due_date TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(id),
-            FOREIGN KEY (tag_id) REFERENCES tags(id)
+            name TEXT NOT NULL,
+            description TEXT,
+            status TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            due_date TEXT NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id)
         );
         "#
     )?;
