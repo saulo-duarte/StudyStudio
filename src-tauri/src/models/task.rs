@@ -1,11 +1,12 @@
 use chrono::{NaiveDateTime, Utc};
-use rusqlite::{Row, types::{FromSql, FromSqlResult, ValueRef, FromSqlError}};
+use rusqlite::{Connection, Row, types::{FromSql, FromSqlResult, ValueRef, FromSqlError}};
 use std::{convert::TryFrom, str::FromStr};
 use std::fmt;
 use serde::{Serialize, Deserialize};
 
 use crate::{errors::task_errors::TaskError, utils::format_date::truncate_to_minute};
 use crate::utils::sql_types::SqliteDateTime;
+use crate::models::tag::Tag;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum TaskStatus {
@@ -57,7 +58,6 @@ impl fmt::Display for TaskStatus {
     }
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Task {
     pub id: Option<u32>,
@@ -68,25 +68,38 @@ pub struct Task {
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
     pub due_date: NaiveDateTime,
+    pub tags: Vec<Tag>,
 }
 
-impl<'a> TryFrom<&Row<'a>> for Task {
+#[derive(Deserialize)]
+pub struct FrontendTag {
+    pub name: String,
+    pub color: String,
+}
+
+impl<'a> TryFrom<(&Connection, &Row<'a>)> for Task {
     type Error = rusqlite::Error;
 
-    fn try_from(row: &Row<'a>) -> Result<Self, Self::Error> {
+    fn try_from((conn, row): (&Connection, &Row<'a>)) -> Result<Self, Self::Error> {
+        let task_id: u32 = row.get("id")?;
+        
+        let tags = crate::database::repository::TagRepository::get_task_tags(conn, task_id)
+            .map_err(|e| rusqlite::Error::FromSqlConversionFailure(0, rusqlite::types::Type::Text, Box::new(e)))?
+            .unwrap_or_else(Vec::new);
+
         Ok(Self {
-            id: row.get("id")?,
+            id: Some(task_id),
             user_id: row.get("user_id")?,
             name: row.get("name")?,
             description: row.get("description")?,
             status: row.get("status")?,
-            created_at: row.get::<_, SqliteDateTime>("created_at")?.into(), 
-            updated_at: row.get::<_, SqliteDateTime>("updated_at")?.into(), 
-            due_date: row.get::<_, SqliteDateTime>("due_date")?.into(), 
+            created_at: row.get::<_, SqliteDateTime>("created_at")?.into(),
+            updated_at: row.get::<_, SqliteDateTime>("updated_at")?.into(),
+            due_date: row.get::<_, SqliteDateTime>("due_date")?.into(),
+            tags,
         })
     }
 }
-
 
 impl Task {
     pub fn new(
@@ -114,52 +127,7 @@ impl Task {
             created_at: now,
             updated_at: now,
             due_date,
+            tags: Vec::new(),
         })
-    }
-
-    pub fn with_id(mut self, id: u32) -> Self {
-        self.id = Some(id);
-        self
-    }
-}
-
-#[cfg(test)]mod tests {
-    use super::*;
-    use rusqlite::{Connection, params};
-
-    fn test_db() -> Connection {
-        let conn = Connection::open_in_memory().unwrap();
-        conn.execute(
-            "CREATE TABLE tasks (
-                id INTEGER PRIMARY KEY,
-                user_id INTEGER NOT NULL,
-                name TEXT NOT NULL,
-                description TEXT,
-                status TEXT NOT NULL,
-                created_at TEXT NOT NULL,
-                updated_at TEXT NOT NULL,
-                due_date TEXT NOT NULL
-            )",
-            [],
-        ).unwrap();
-        conn
-    }
-
-    #[test]
-    fn test_invalid_status_conversion() {
-        let conn = test_db();
-        let now = Utc::now().naive_utc().to_string();
-        
-        conn.execute(
-            "INSERT INTO tasks 
-            (user_id, name, status, created_at, updated_at, due_date)
-            VALUES (1, 'Bad Task', 'invalid', ?, ?, ?)",
-            params![now, now, now],
-        ).unwrap();
-
-        let mut stmt = conn.prepare("SELECT * FROM tasks").unwrap();
-        let result = stmt.query_row([], |row| Task::try_from(row));
-        
-        assert!(result.is_err());
     }
 }

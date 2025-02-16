@@ -19,8 +19,16 @@ pub fn initialize_database(conn: &Connection) -> Result<()> {
 
         CREATE TABLE IF NOT EXISTS tags (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            tag_name TEXT NOT NULL,
-            tag_color TEXT NOT NULL
+            tag_name TEXT NOT NULL UNIQUE,
+            tag_color TEXT
+        );
+
+        CREATE TABLE IF NOT EXISTS task_tags (
+            task_id INTEGER NOT NULL,
+            tag_id INTEGER NOT NULL,
+            FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
+            FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE,
+            PRIMARY KEY (task_id, tag_id)
         );
 
         CREATE TABLE IF NOT EXISTS tasks (

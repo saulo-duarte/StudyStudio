@@ -1,13 +1,6 @@
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-} from "@/components/ui/sidebar"
 
-import { Home, ListTodo } from "lucide-react"
+import { Home, ListTodo, Lock } from "lucide-react"
+import Link from "next/link";
 
 export function AppSidebar() {
   const sidebarItems = [
@@ -22,30 +15,24 @@ export function AppSidebar() {
       icon: ListTodo,
     },
     {
-      title: "auth",
+      title: "Auth",
       url: "/auth",
-      icon: ListTodo
+      icon: Lock
     }
   ]
 
   return (
-    <Sidebar className="hidden lg:block w-64 h-screen">
-      <SidebarHeader className="h-16 flex items-center px-4 text-xl font-bold border-b">StudyStudio</SidebarHeader>
-      <SidebarContent>
-        <SidebarMenu>
-          {sidebarItems.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild>
-                <a href={item.url} className="flex items-center gap-2">
-                  <item.icon className="w-5 h-5" />
-                  <span>{item.title}</span>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-      </SidebarContent>
-    </Sidebar>
-  )
+    <div className="sticky left-0 top-0 h-screen w-20 bg-sidebar text-foreground flex flex-col items-center py-4 gap-6">
+      {sidebarItems.map((item, index) => (
+        <Link
+          key={index}
+          href={item.url}
+          className="flex flex-col items-center gap-1 p-4 rounded-lg text-foreground hover:text-foreground transition hover:bg-muted"
+        >
+          <item.icon size={32} />
+          <span className="text-xs">{item.title}</span>
+        </Link>
+      ))}
+    </div>
+  );
 }
-

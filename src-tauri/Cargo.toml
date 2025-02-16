@@ -25,4 +25,5 @@ tauri = { version = "2.2.3", features = [] }
 tauri-plugin-log = "2.0.0-rc"
 rusqlite = "0.33.0"
 dirs = "6.0.0"
-chrono = "0.4.39"
+chrono = { version = "0.4.39", features = ["serde"] }
+thiserror = "2.0.11"

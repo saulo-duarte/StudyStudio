@@ -1,12 +1,12 @@
 import { AuthForm } from "./AuthFom";
 
-export default function AuthFOrm() {
+export default function AuthPage() {
     return (
         <main className="relative min-h-screen">
             <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
                 <div className="m-24 z-10">
                     <header>
-                        <h1 className="font-audiowide text-6xl">StudyStudio</h1>
+                        <h1 className="font-anta  text-6xl">StudyStudio</h1>
                     </header>
                     <section className="mt-48">
                         <h2 className="text-3xl font-semibold">

@@ -9,6 +9,7 @@ pub mod models;
 pub mod views;
 pub mod commands;
 pub mod errors;
+pub mod utils;
 
 pub struct AppState {
   pub db_conn: Arc<Mutex<Connection>>
@@ -49,7 +50,17 @@ pub fn run() {
       .manage(app_state)
       .invoke_handler(tauri::generate_handler![
         commands::create_user,
-        commands::get_activities_users_count_command,
+        commands::get_active_users_count,
+        commands::get_active_user_id,
+        commands::create_task,
+        commands::get_all_tasks,
+        commands::maximize_window,
+        commands::minimize_window,
+        commands::close_window,
+        commands::delete_task,
+        commands::update_task,
+        commands::create_tag,
+        commands::get_all_tags,
       ])
       .setup(|app| {
           if cfg!(debug_assertions) {
