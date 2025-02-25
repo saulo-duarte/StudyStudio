@@ -3701,6 +3701,7 @@ name = "studystudio"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "dirs 6.0.0",
  "rusqlite",
  "serde",
  "serde_json",
