@@ -1,4 +1,5 @@
-use crate::errors::UserError;
+use crate::errors::{UserError, TagError};
+
 
 #[derive(Debug, serde::Serialize)]
 pub enum CommandError {
@@ -11,6 +12,15 @@ impl From<UserError> for CommandError {
     fn from(e: UserError) -> Self {
         match e {
             UserError::InvalidName(msg) => CommandError::Validation(msg), 
+            _ => CommandError::Database(e.to_string()),
+        }
+    }
+}
+
+impl From<TagError> for CommandError {
+    fn from(e: TagError) -> Self {
+        match e {
+            TagError::InvalidName(msg) | TagError::InvalidColor(msg) => CommandError::Validation(msg),
             _ => CommandError::Database(e.to_string()),
         }
     }
