@@ -3,10 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { TaskPanel } from "@/components/TaskPanel";
-import { WeeklyCalendar } from "@/components/WeeklyCalendar";
 
-export default function App({ children }: { children: React.ReactNode }) {
+export default function AuthWrapper({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
@@ -21,11 +19,5 @@ export default function App({ children }: { children: React.ReactNode }) {
       });
   }, [router]);
 
-  return (
-    <div>
-      <TaskPanel />
-      <WeeklyCalendar />
-      {children}
-    </div>
-  );
+  return <>{children}</>;
 }
