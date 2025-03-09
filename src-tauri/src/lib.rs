@@ -44,12 +44,28 @@ pub fn run() {
     db_path.push("study-studio");
     db_path.push("app.db");
 
-    let _app_state = AppState::new(db_path.to_str().unwrap())
-      .expect("Failed to initialize the application state");
+    let app_state = AppState::new(db_path.to_str().unwrap())
+        .expect("Failed to initialize the application state");
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![])
+        .manage(app_state) 
+        .invoke_handler(tauri::generate_handler![
+          commands::create_user,
+            commands::get_active_users_count,
+            commands::get_active_user_id,
+            commands::create_tag,
+            commands::get_tag_by_id,
+            commands::list_tags,
+            commands::create_task,
+            commands::update_task,
+            commands::get_all_tasks,
+            commands::delete_task,
+            commands::update_tag,
+            commands::delete_tag,
+            commands::get_tasks_for_today,
+          ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
+
